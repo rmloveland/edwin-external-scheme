@@ -35,7 +35,7 @@ USA.
   #f
   string-or-false?)
 
-(define-major-mode exterior-scheme-repl comint "Exterior Scheme REPL"
+(define-major-mode external-scheme-repl comint "External Scheme REPL"
   "Major mode for interacting with an external Scheme.
 Return after the end of the process' output sends the text from the 
     end of process to the end of the current line.
@@ -90,10 +90,10 @@ input."
 	     (ref-variable explicit-external-scheme-file-name)
 	     (get-environment-variable "PREFERRED_SCHEME"))))
        (apply make-comint
-	      (ref-mode-object exterior-scheme-repl)
+	      (ref-mode-object external-scheme-repl)
 	      (if (not new-buffer?)
-		  "*exterior-scheme-repl*"
-		  (new-buffer "*exterior-scheme-repl*"))
+		  "*external-scheme-repl*"
+		  (new-buffer "*external-scheme-repl*"))
 	      program
 	      '())))))
 
