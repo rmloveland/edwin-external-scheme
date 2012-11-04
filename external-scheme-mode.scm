@@ -26,7 +26,10 @@ USA.
 (declare (usual-integrations))
 
 (define-command external-scheme-mode
-  "A Scheme mode for external, non-MIT Schemes."
+  "A Scheme mode for non-MIT Schemes. Combined with an external Scheme
+REPL started with `\#M-x external-scheme-repl', you can evaluate code
+from a buffer in this mode using the Scheme of
+your choice."
   ()
   (lambda () (set-current-major-mode! (ref-mode-object external-scheme))))
 
@@ -34,19 +37,17 @@ USA.
   "Major mode specialized for editing non-MIT Scheme code.
 
 This mode inherits from Edwin's built-in Scheme mode, so commands
-should be the same, except for those noted here.
+should be the same, except for the evaluation commands.
 
 The following commands evaluate Scheme expressions in an external
 Scheme REPL. You'll need to start it by issuing the command
-`external-scheme-repl'.
+`#\M-x external-scheme-repl'.
 
-\\[eval-expression] reads and evaluates an expression in minibuffer.
-\\[eval-last-sexp] evaluates the expression preceding point.
-\\[eval-defun] evaluates the current definition.
-\\[eval-current-buffer] evaluates the buffer.
-\\[eval-region] evaluates the current region.
+\\[external-scheme-eval-last-sexp] evaluates the expression preceding point.
+\\[external-scheme-eval-defun] evaluates the current definition.
+\\[external-scheme-eval-region] evaluates the current region.
 
-\\{scheme}"
+\\{external-scheme}"
   (lambda (buffer)
     (local-set-variable! syntax-table scheme-mode:syntax-table buffer)
     (local-set-variable! syntax-ignore-comments-backwards #f buffer)
@@ -72,7 +73,7 @@ Scheme REPL. You'll need to start it by issuing the command
     (event-distributor/invoke! (ref-variable external-scheme-mode-hook buffer) buffer)))
 
 (define-variable external-scheme-mode-abbrev-table
-  "Mode-specific abbrev table for non-MIT Scheme code.")
+  "Mode-specific abbrev table for External Scheme mode.")
 (define-abbrev-table 'external-scheme-mode-abbrev-table '())
 
 (define-variable external-scheme-mode-hook
@@ -93,7 +94,8 @@ Scheme REPL. You'll need to start it by issuing the command
 ;;; Procedures.
 
 (define (external-scheme-process)
-  "Get the External Scheme process."
+  "Get the external Scheme REPL's process. Returns #f if no external
+REPL is running."
   (let ((filtered-list (filter (lambda (p)
 			   (external-scheme-process? p))
 			 (process-list))))
@@ -102,34 +104,37 @@ Scheme REPL. You'll need to start it by issuing the command
 	(car filtered-list))))
 
 (define (external-scheme-process? process)
-  "Is this the External Scheme's process?"
+  "Is this process the external Scheme REPL's process?"
   (string=? (process-name process)
 	    "*external-scheme-repl*"))
 
 (define (external-scheme-running?)
+  "Is an external Scheme REPL running?"
   (let ((val (external-scheme-process)))
     (if val #t #f)))
 
 (define (external-scheme-eval-string string)
+  "Evaluate a string in the external Scheme's REPL."
   (if (external-scheme-running?)
       (process-send-string (external-scheme-process)
 			   (string-append string "\n"))
       (message "No external Scheme process is running. Try `#\M-x external-scheme-repl'.")))
 
 (define (external-scheme-eval-region region)
+  "Evaluate the region in an external Scheme REPL."
   (let* ((string (region->string region)))
     (external-scheme-eval-string string)))
 
 ;;; Commands.
 
 (define-command external-scheme-eval-region
-  ""
+  "Evaluate the region in an external Scheme REPL."
   ()
   (lambda ()
     (external-scheme-eval-region (current-region))))
 
 (define-command external-scheme-eval-defun
-  "Evaluate defun that point is in or before."
+  "Evaluate the procedure definition that point is in or before."
   ()
   (lambda ()
     (external-scheme-send-from-mark (current-definition-start))))
@@ -142,5 +147,6 @@ Scheme REPL. You'll need to start it by issuing the command
      (backward-sexp (current-point) 1 'ERROR))))
 
 (define (external-scheme-send-from-mark mark)
+  "Send text from the current mark to the external Scheme REPL."
   (external-scheme-eval-region
    (make-region mark (forward-sexp mark 1 'ERROR))))
