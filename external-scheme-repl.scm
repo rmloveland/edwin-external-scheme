@@ -26,17 +26,17 @@ USA.
 (declare (usual-integrations))
 
 (define-variable external-scheme-repl-prompt-pattern
-  "Regexp to match prompts in the external Scheme."
+  "Regexp to match the external Scheme's REPL prompt."
   (os/default-shell-prompt-pattern)
   string?)
 
 (define-variable explicit-external-scheme-file-name
-  "If not #f, file name to use for explicitly requested external Scheme."
+  "If not #f, file name to use for the explicitly requested external Scheme."
   #f
   string-or-false?)
 
 (define-major-mode external-scheme-repl comint "External Scheme REPL"
-  "Major mode for interacting with an external Scheme.
+  "Major mode for interacting with an external Scheme REPL.
 Return after the end of the process' output sends the text from the 
     end of process to the end of the current line.
 
@@ -44,7 +44,7 @@ If you accidentally suspend your process, use \\[comint-continue-subjob]
 to continue it.
 
 Customisation: Entry to this mode runs the hooks on comint-mode-hook and
-external-scheme-mode-hook (in that order)."
+external-scheme-repl-mode-hook (in that order)."
   (lambda (buffer)
     (local-set-variable! comint-prompt-regexp
 			 (ref-variable external-scheme-repl-prompt-pattern buffer)
@@ -69,15 +69,16 @@ external-scheme-mode-hook (in that order)."
 
 
 (define-command external-scheme-repl
-  "Run an inferior Scheme, with I/O through buffer *external-scheme-repl*.
+  "Run an external Scheme REPL, with I/O through buffer *external-scheme-repl*.
 With prefix argument, unconditionally create a new buffer and process.
 If buffer exists but Scheme process is not running, make new shell.
 If buffer exists and Scheme process is running, just switch to buffer
-  *external-scheme-repl*. 
+*external-scheme-repl*. 
 
-The location of the Scheme binary to use comes from either (1) the
-variable `explicit-external-scheme-file-name' or (2) the
-PREFERRED_SCHEME environment variable.
+The location of the Scheme binary to use comes from one of:
+(1) the value entered at the prompt
+(2) the variable `explicit-external-scheme-file-name', or
+(3) the PREFERRED_SCHEME environment variable.
 
 The buffer is put in External Scheme REPL mode, giving commands for sending
 input."
