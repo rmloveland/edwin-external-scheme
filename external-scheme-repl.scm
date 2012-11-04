@@ -25,7 +25,7 @@ USA.
 
 (declare (usual-integrations))
 
-(define-variable external-scheme-prompt-pattern
+(define-variable external-scheme-repl-prompt-pattern
   "Regexp to match prompts in the external Scheme."
   (os/default-shell-prompt-pattern)
   string?)
@@ -47,20 +47,20 @@ Customisation: Entry to this mode runs the hooks on comint-mode-hook and
 external-scheme-mode-hook (in that order)."
   (lambda (buffer)
     (local-set-variable! comint-prompt-regexp
-			 (ref-variable external-scheme-prompt-pattern buffer)
+			 (ref-variable external-scheme-repl-prompt-pattern buffer)
 			 buffer)
     (local-set-variable! local-abbrev-table
-			 (ref-variable external-scheme-mode-abbrev-table buffer)
+			 (ref-variable external-scheme-repl-mode-abbrev-table buffer)
 			 buffer)
     (event-distributor/invoke!
-     (ref-variable external-scheme-mode-hook buffer) buffer)))
+     (ref-variable external-scheme-repl-mode-hook buffer) buffer)))
 
-(define-variable external-scheme-mode-abbrev-table
-  "Mode-specific abbrev table for External Scheme mode.")
+(define-variable external-scheme-repl-mode-abbrev-table
+  "Mode-specific abbrev table for External Scheme REPL mode.")
 (define-abbrev-table 'shell-mode-abbrev-table '())
 
-(define-variable external-scheme-mode-hook
-  "An event distributor that is invoked when entering Inferior Scheme mode."
+(define-variable external-scheme-repl-mode-hook
+  "An event distributor that is invoked when entering External Scheme REPL mode."
   (make-event-distributor))
 
 (define-key 'external-scheme-repl #\tab 'lisp-indent-line)
@@ -69,7 +69,7 @@ external-scheme-mode-hook (in that order)."
 
 
 (define-command external-scheme-repl
-  "Run an inferior Scheme, with I/O through buffer *inferior-scheme*.
+  "Run an inferior Scheme, with I/O through buffer *external-scheme-repl*.
 With prefix argument, unconditionally create a new buffer and process.
 If buffer exists but Scheme process is not running, make new shell.
 If buffer exists and Scheme process is running, just switch to buffer
@@ -79,7 +79,7 @@ The location of the Scheme binary to use comes from either (1) the
 variable `explicit-external-scheme-file-name' or (2) the
 PREFERRED_SCHEME environment variable.
 
-The buffer is put in External Scheme mode, giving commands for sending
+The buffer is put in External Scheme REPL mode, giving commands for sending
 input."
   "sRun Scheme: \nP"
   (lambda (scheme-program-name new-buffer?)
@@ -96,4 +96,3 @@ input."
 		  (new-buffer "*external-scheme-repl*"))
 	      program
 	      '())))))
-
