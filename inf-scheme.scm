@@ -19,8 +19,8 @@ along with MIT/GNU Scheme; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301,
 USA.
 
-I've plagiarized both Olin Shivers' cmuscheme.el and iuscheme.el by
-Chris Haynes and Erik Hilsdale, as well as shell.scm from Edwin itself.
+I've plagiarized both Olin Shivers' `cmuscheme.el' and `iuscheme.el' by
+Chris Haynes and Erik Hilsdale, as well as `shell.scm' from Edwin itself.
 
 |#
 
@@ -29,12 +29,12 @@ Chris Haynes and Erik Hilsdale, as well as shell.scm from Edwin itself.
 (declare (usual-integrations))
 
 (define-variable inferior-scheme-prompt-pattern
-  "Regexp to match prompts in the inferior Scheme Shell."
+  "Regexp to match prompts in the inferior Scheme."
   (os/default-shell-prompt-pattern)
   string?)
 
-(define-variable explicit-scheme-file-name
-  "If not #F, file name to use for explicitly requested inferior shell."
+(define-variable explicit-inferior-scheme-file-name
+  "If not #f, file name to use for explicitly requested inferior Scheme."
   #f
   string-or-false?)
 
@@ -42,8 +42,6 @@ Chris Haynes and Erik Hilsdale, as well as shell.scm from Edwin itself.
   "Major mode for interacting with an inferior Scheme.
 Return after the end of the process' output sends the text from the 
     end of process to the end of the current line.
-Return before end of process output copies rest of line to end (skipping
-    the prompt) and sends it.
 
 If you accidentally suspend your process, use \\[comint-continue-subjob]
 to continue it.
@@ -61,30 +59,30 @@ inferior-scheme-mode-hook (in that order)."
      (ref-variable inferior-scheme-mode-hook buffer) buffer)))
 
 (define-variable inferior-scheme-mode-abbrev-table
-  "Mode-specific abbrev table for Shell mode.")
+  "Mode-specific abbrev table for Inferior Scheme mode.")
 (define-abbrev-table 'shell-mode-abbrev-table '())
 
 (define-variable inferior-scheme-mode-hook
-  "An event distributor that is invoked when entering Shell mode."
+  "An event distributor that is invoked when entering Inferior Scheme mode."
   (make-event-distributor))
 
-; (define-key 'inferior-scheme #\tab 'comint-dynamic-complete)
-; (define-key 'inferior-scheme #\M-? 'comint-dynamic-list-completions)
-(define-key 'inferior-scheme #\return 'comint-send-input)
+(define-key 'inferior-scheme #\tab 'lisp-indent-line)
+(define-key 'inferior-scheme #\) 'lisp-insert-paren)
+(define-key 'inferior-scheme #\c-m-q 'indent-sexp)
 
 
 (define-command run-scheme
   "Run an inferior Scheme, with I/O through buffer *inferior-scheme*.
 With prefix argument, unconditionally create a new buffer and process.
-If buffer exists but shell process is not running, make new shell.
-If buffer exists and shell process is running, just switch to buffer
-  *inferior-scheme*.
+If buffer exists but Scheme process is not running, make new shell.
+If buffer exists and Scheme process is running, just switch to buffer
+  *inferior-scheme*. 
 
-The location of the scsh binary to use comes from either (1) the
+The location of the Scheme binary to use comes from either (1) the
 variable `explicit-inferior-scheme-file-name' or (2) the
 INFERIOR_SCHEME environment variable.
 
-The buffer is put in inferior-scheme mode, giving commands for sending
+The buffer is put in Inferior Scheme mode, giving commands for sending
 input."
   "sRun Scheme: \nP"
   (lambda (scheme-program-name new-buffer?)
@@ -101,31 +99,3 @@ input."
 		  (new-buffer "*inferior-scheme*"))
 	      program
 	      '())))))
-
-; '("--" "-lp-default")
-
-
-; Customize by setting these hooks:
-; comint-input-sentinel
-; comint-input-filter
-; comint-get-old-input
-
-; (define-command scheme-return
-;   ""
-;   ()
-;   (lambda () (scheme-return)))
-
-; (define (scheme-return)
-;   (let ((input-start (process-mark (get-buffer-process (current-buffer)))))
-;     (if (< (current-point) input-start)
-; 	(comint-send-input)
-; 	(let ((state (save-excursion
-; 		      (parse-partial-sexp input-start (current-point)))))
-; 	  (if (and (< (car state) 1)          ; depth in parens is zero
-; 		   (not (list-ref state 3))   ; not in a string
-; 		   (not (save-excursion       ; nothing after the
-; 					      ; point
-; 			 (re-search-forward "[^ \t\n\r]" (current-point)
-; 					    (end-of-buffer)))))
-; 	      (comint-send-input)
-; 	      (newline-and-indent))))))
