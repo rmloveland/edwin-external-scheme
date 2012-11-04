@@ -1,0 +1,33 @@
+* Interact with External Schemes from within Edwin
+
+** Usage
+
+This repository contains two Edwin modes, External Scheme mode and
+External Scheme REPL mode.
+
+External Scheme REPL mode allows you to interact with an external
+Scheme REPL's process from Edwin in the same way you would interact
+with a shell using `#\M-x shell'. Load the file
+`external-scheme-repl.scm' and enter the command `#\M-x
+external-scheme-repl'. You'll be asked to enter the name of the
+external Scheme you'd like to run, and away you go.
+
+External Scheme mode inherits from Edwin's Scheme mode for all of its
+formatting and editing commands, but provides its own commands for
+sending expressions to a running external Scheme REPL, if one exists.
+
+Load the file `external-scheme-mode.scm' and enter the command `#\M-x
+external-scheme-mode' in a buffer containing Scheme code that you want
+to send to the external Scheme. Right now you can run only one
+external Scheme REPL, so be sure that the code you're sending is going
+to be understood by that Scheme.
+
+** Caveats
+
+Right now you may run only one external Scheme REPL at a time. Any
+Scheme buffers in External Scheme mode will send their eval'd code to
+that REPL.
+
+Finally, note that files containing Scheme code are automatically
+opened by Edwin in its own Scheme mode, no matter what Scheme they're
+written in, so you'll need to do `#\M-x external-scheme-mode'.
