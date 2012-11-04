@@ -35,7 +35,7 @@ USA.
   #f
   string-or-false?)
 
-(define-major-mode exterior-scheme-repl comint "Inferior Scheme"
+(define-major-mode exterior-scheme-repl comint "Exterior Scheme REPL"
   "Major mode for interacting with an external Scheme.
 Return after the end of the process' output sends the text from the 
     end of process to the end of the current line.
