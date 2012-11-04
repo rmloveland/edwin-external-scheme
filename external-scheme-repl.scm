@@ -63,9 +63,9 @@ external-scheme-mode-hook (in that order)."
   "An event distributor that is invoked when entering Inferior Scheme mode."
   (make-event-distributor))
 
-(define-key 'external-scheme #\tab 'lisp-indent-line)
-(define-key 'external-scheme #\) 'lisp-insert-paren)
-(define-key 'external-scheme #\c-m-q 'indent-sexp)
+(define-key 'external-scheme-repl #\tab 'lisp-indent-line)
+(define-key 'external-scheme-repl #\) 'lisp-insert-paren)
+(define-key 'external-scheme-repl #\c-m-q 'indent-sexp)
 
 
 (define-command external-scheme-repl
