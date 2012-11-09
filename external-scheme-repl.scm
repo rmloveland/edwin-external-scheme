@@ -66,6 +66,7 @@ external-scheme-repl-mode-hook (in that order)."
 (define-key 'external-scheme-repl #\tab 'lisp-indent-line)
 (define-key 'external-scheme-repl #\) 'lisp-insert-paren)
 (define-key 'external-scheme-repl #\c-m-q 'indent-sexp)
+(define-key 'external-scheme-repl #\c-a 'comint-bol)
 
 
 (define-command external-scheme-repl
