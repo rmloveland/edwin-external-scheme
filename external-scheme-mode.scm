@@ -85,6 +85,7 @@ Scheme REPL. You'll need to start it by issuing the command
 (define-key 'external-scheme #\M-z 'external-scheme-eval-defun)
 (define-key 'external-scheme #\C-M-z 'external-scheme-eval-region)
 (define-key 'external-scheme '(#\C-x #\C-e) 'external-scheme-eval-last-sexp)
+(define-key 'external-scheme '(#\C-c #\C-z) 'external-scheme-select-repl-other-window)
 
 (define-key 'external-scheme #\M-A 'undefined)
 (define-key 'external-scheme #\M-tab 'undefined)
@@ -118,12 +119,25 @@ REPL is running."
   (if (external-scheme-running?)
       (process-send-string (external-scheme-process)
 			   (string-append string "\n"))
-      (message "No external Scheme process is running. Try `#\M-x external-scheme-repl'.")))
+      (message "No external Scheme REPL is running. Try `#\M-x external-scheme-repl'.")))
 
 (define (external-scheme-eval-region region)
   "Evaluate the region in an external Scheme REPL."
   (let* ((string (region->string region)))
     (external-scheme-eval-string string)))
+
+(define (external-scheme-select-repl-other-window)
+  "Open the external Scheme's REPL buffer in the other window.
+If no such REPL is running, tell the user to start one."
+  (if (external-scheme-running?)
+      (select-buffer-other-window
+       (find-buffer "*external-scheme-repl*"))
+      (message "No external Scheme REPL is running. Try `#\M-x external-scheme-repl'.")))
+
+(define (external-scheme-send-from-mark mark)
+  "Send text from the current mark to the external Scheme REPL."
+  (external-scheme-eval-region
+   (make-region mark (forward-sexp mark 1 'ERROR))))
 
 ;;; Commands.
 
@@ -146,7 +160,9 @@ REPL is running."
     (external-scheme-send-from-mark
      (backward-sexp (current-point) 1 'ERROR))))
 
-(define (external-scheme-send-from-mark mark)
-  "Send text from the current mark to the external Scheme REPL."
-  (external-scheme-eval-region
-   (make-region mark (forward-sexp mark 1 'ERROR))))
+(define-command external-scheme-select-repl-other-window
+  "Open the external Scheme's REPL buffer in the other window.
+If no such REPL is running, tell the user to start one."
+  ()
+  (lambda ()
+    (external-scheme-select-repl-other-window)))
