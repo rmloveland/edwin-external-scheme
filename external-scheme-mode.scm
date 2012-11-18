@@ -1,6 +1,6 @@
 #| -*-Scheme-*-
 
-Copyright (C) 2012 Rich Loveland
+Copyright (C) 2012 Rich Loveland <loveland.richard@gmail.com>
 
 This file is NOT part of MIT/GNU Scheme.
 
